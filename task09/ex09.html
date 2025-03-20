@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+let a = parseFloat(prompt("Nhập số thứ nhất:"));
+let b = parseFloat(prompt("Nhập số thứ hai:"));
+
+function swapNumber(a, b) {
+    a = a + b;
+    b = a - b;
+    a = a - b;
+    console.log(`Sau khi hoán đổi: a = ${a}, b = ${b}`);
+}
+swapNumber(a, b);
+
+    </script>
+</body>
+</html>
