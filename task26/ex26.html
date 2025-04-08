@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      function countElement(arr) {
+        return arr.reduce((acc, item) => {
+          // Nếu phần tử đã tồn tại, tăng lên 1
+          if (acc[item]) {
+            acc[item]++;
+          } else {
+            // Nếu chưa có, gán = 1
+            acc[item] = 1;
+          }
+          return acc;
+        }, {});
+      }
+      const fruits = [
+        "apple",
+        "banana",
+        "kiwi",
+        "kiwi",
+        "banana",
+        "orange",
+        "apple",
+        "kiwi",
+      ];
+
+      const result = countElement(fruits);
+      console.log(result);
+    </script>
+  </body>
+</html>
