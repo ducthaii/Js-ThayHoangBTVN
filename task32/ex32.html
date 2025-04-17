@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      const arrayString = ["JavaScript", "java", "Python", "Ruby"];
+      let keyWord = "ja";
+
+      function filterByKeyword(arrayString, keyWord) {
+        // Đưa cả chuỗi và từ khóa về chữ thường để so sánh không phân biệt hoa/thường
+        const lowerKeyword = keyWord.toLowerCase();
+
+        // Dùng filter để lọc các chuỗi chứa từ khóa
+        const result = arrayString.filter(function (item) {
+          return item.toLowerCase().includes(lowerKeyword);
+        });
+
+        return result; // Trả về mảng kết quả (nếu không có thì là [])
+      }
+
+      console.log(filterByKeyword(arrayString, keyWord));
+    </script>
+  </body>
+</html>

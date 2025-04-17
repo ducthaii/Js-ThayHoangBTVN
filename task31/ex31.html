@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      function countTotalWords(arr) {
+        let total = 0; 
+
+        for (let i = 0; i < arr.length; i++) {
+          const sentence = arr[i]; // Lấy từng câu trong mảng
+          const words = sentence.split(" "); // Tách câu thành các từ bằng dấu cách
+          total += words.length; // Cộng số từ của câu vào tổng
+        }
+
+        return total; // Trả về tổng số từ
+      }
+
+      const arrayWords = ["Hello world", "JS is fun", "Arrays and strings"];
+      console.log(countTotalWords(arrayWords)); 
+    </script>
+  </body>
+</html>
