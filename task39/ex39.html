@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // Bài 1
+        function getData(callback) {
+            setTimeout(() => {
+                const data = [1,2,3,4];
+                callback(data)
+            }, 1000);
+        }
+        getData((data) => {
+            console.log(data);
+            
+        })
+
+        // Bài 2
+        function getData() {
+            return new Promise((resolve,reject) => {
+                setTimeout(() => {
+                    const data = [1,2,3,4];
+                    resolve(data)
+                },1000)
+            })
+        }
+        getData()
+        .then((data) => console.log(data)) 
+        .catch((error) => console.error(error));
+
+        // Bài 3
+        async function getData() {
+            return new Promise((resolve,reject) => {
+                setTimeout(() => {
+                    const data = [1,2,3,4]
+                    resolve(data)
+                },1000)
+            })
+        }
+        (async () => {
+            try {
+                const data = await getData();
+                console.log(data);
+                
+            } catch (error) {
+                console.error(error)
+            }
+        })();
+    </script>
+</body>
+</html>

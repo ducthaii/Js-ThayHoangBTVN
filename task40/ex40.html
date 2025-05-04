@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      // bài 1
+      function getUser(userId, callback) {
+        setTimeout(() => {
+          callback({ id: userId, name: "John", age: 30 });
+        }, 1000);
+      }
+
+      function getPurchases(userId, callback) {
+        setTimeout(() => {
+          callback([
+            { id: 1, userId: userId, product: "Laptop", price: 1000 },
+            { id: 2, userId: userId, product: "Phone", price: 2000 },
+          ]);
+        }, 1000);
+      }
+
+      function getProductDetails(
+        productId,
+        productName,
+        productPrice,
+        callback
+      ) {
+        setTimeout(() => {
+          callback({ id: productId, name: productName, price: productPrice });
+        }, 1000);
+      }
+
+      // Thực thi tuần tự
+      getUser(1, (user) => {
+        console.log("User:", user);
+        getPurchases(user.id, (purchases) => {
+          console.log("Purchases:", purchases);
+
+          let total = 0;
+          let count = 0;
+
+          purchases.forEach((purchase, index) => {
+            getProductDetails(
+              purchase.id,
+              purchase.product,
+              purchase.price,
+              (productDetail) => {
+                console.log(`Product Detail ${index + 1}:`, productDetail);
+                total += productDetail.price;
+                count++;
+                if (count === purchases.length) {
+                  console.log("Total Price:", total);
+                }
+              }
+            );
+          });
+        });
+      });
+
+      // Bài 2
+      function getUser(userId) {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            const user = { id: userId, name: "John", age: 30 };
+            resolve(user);
+          }, 1000);
+        });
+      }
+
+      function getPurchases(userId) {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            const purchase = [
+              { id: 1, userId: userId, product: "Laptop", price: 1000 },
+              { id: 2, userId: userId, product: "Phone", price: 2000 },
+            ];
+            resolve(purchase);
+          }, 1000);
+        });
+      }
+
+      function getProductDetails(productId, productName, productPrice) {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            const details = {
+              id: productId,
+              name: productName,
+              price: productPrice,
+            };
+            resolve(details);
+          }, 1000);
+        });
+      }
+
+      // Xử lý bài toán bằng Promise chain
+
+      getUser(1)
+        .then((user) => {
+          console.log("User:", user);
+          return getPurchases(user.id);
+        })
+        .then((purchases) => {
+          console.log("Purchases:", purchases);
+
+          // Lấy chi tiết từng sản phẩm
+          const detailPromises = purchases.map((p) =>
+            getProductDetails(p.id, p.product, p.price)
+          );
+
+          // Trả về tất cả chi tiết sản phẩm khi hoàn tất
+          return Promise.all(detailPromises);
+        })
+        .then((productDetails) => {
+          console.log("Product Details:");
+          productDetails.forEach((product) => console.log(product));
+
+          // Tính tổng giá trị
+          const total = productDetails.reduce((sum, p) => sum + p.price, 0);
+          console.log("Total Price:", total);
+        })
+        .catch((error) => {
+          console.error("Đã xảy ra lỗi:", error);
+        });
+
+      // Bài 3
+      function getUser(userId) {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve({ id: userId, name: "John", age: 30 });
+          }, 1000); 
+        });
+      }
+
+      function getPurchases(userId) {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve([
+              { id: 1, userId: userId, product: "Laptop", price: 1000 },
+              { id: 2, userId: userId, product: "Phone", price: 2000 },
+            ]);
+          }, 1000); 
+        });
+      }
+
+      function getProductDetails(productId, productName, productPrice) {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve({ id: productId, name: productName, price: productPrice });
+          }, 1000); 
+        });
+      }
+
+      async function processUserData() {
+        try {
+          // Lấy thông tin user
+          const user = await getUser(1);
+          console.log("User:", user);
+
+          // Lấy danh sách sản phẩm đã mua
+          const purchases = await getPurchases(user.id);
+          console.log("Purchases:", purchases);
+
+          let total = 0;
+
+          // Lấy chi tiết từng sản phẩm và tính tổng
+          for (const purchase of purchases) {
+            const detail = await getProductDetails(
+              purchase.id,
+              purchase.product,
+              purchase.price
+            );
+            console.log("Product Detail:", detail);
+            total += detail.price;
+          }
+
+          // Bước 4: In ra tổng giá trị
+          console.log("Total Price:", total);
+        } catch (error) {
+          console.error("Có lỗi xảy ra:", error);
+        }
+      }
+
+      processUserData();
+    </script>
+  </body>
+</html>
