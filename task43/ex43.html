@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Listing</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 20px;
+        align-items: center;
+      }
+
+      input[type="text"] {
+        padding: 8px;
+        flex: 1;
+        min-width: 200px;
+      }
+
+      button,
+      select {
+        padding: 8px 12px;
+        cursor: pointer;
+      }
+
+      #products {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 20px;
+      }
+
+      .product {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        padding: 10px;
+        text-align: center;
+      }
+
+      .product img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 4px;
+      }
+
+      .paginate {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin: 20px 0;
+      }
+
+      .product-detail {
+        background: white;
+        margin-top: 30px;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .product-detail img {
+        max-width: 100%;
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="controls">
+      <input type="text" id="search-input" placeholder="Search products..." />
+      <button id="search-btn">Search</button>
+      <select id="sort-price">
+        <option value="">Sort by price</option>
+        <option value="asc">Low to High</option>
+        <option value="desc">High to Low</option>
+      </select>
+    </div>
+
+    <div id="products"></div>
+
+    <div class="paginate">
+      <button id="preview">preview</button>
+      <button id="current-page"></button>
+      <button id="next">next</button>
+    </div>
+
+    <div id="product-detail"></div>
+
+    <script>
+      const productsEle = document.getElementById("products");
+      const previewEle = document.getElementById("preview");
+      const nextEle = document.getElementById("next");
+      const currentPageEle = document.getElementById("current-page");
+      const searchInput = document.getElementById("search-input");
+      const searchBtn = document.getElementById("search-btn");
+      const sortEle = document.getElementById("sort-price");
+      const productDetailEle = document.getElementById("product-detail");
+
+      let page = 1;
+      let limit = 12;
+      let skip = (page - 1) * limit;
+      let totalProducts;
+      let allProducts = [];
+
+      const fetchProducts = async (limit = 12, skip = 0) => {
+        try {
+          const res = await fetch(
+            `https://dummyjson.com/products?limit=${limit}&skip=${skip}`
+          );
+          const { products, total } = await res.json();
+          totalProducts = total;
+          allProducts = products;
+          renderUI(products);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
+      const renderUI = (products) => {
+        productsEle.innerHTML = "";
+        productDetailEle.innerHTML = ""; // clear detail
+
+        products.forEach((product) => {
+          const productEle = document.createElement("div");
+          productEle.classList.add("product");
+          productEle.innerHTML = `
+            <img src="${product.thumbnail}" alt="${product.title}" />
+            <h3>${product.title}</h3>
+            <p>Price: $${product.price}</p>
+            <button class="detail-btn" data-id="${product.id}">View Detail</button>
+        `;
+          productsEle.appendChild(productEle);
+        });
+
+        // Add event listener to detail buttons
+        document.querySelectorAll(".detail-btn").forEach((btn) => {
+          btn.addEventListener("click", async function () {
+            const id = this.getAttribute("data-id");
+            const res = await fetch(`https://dummyjson.com/products/${id}`);
+            const product = await res.json();
+            productDetailEle.innerHTML = `
+              <div class="product-detail">
+                <img src="${product.thumbnail}" />
+                <h2>${product.title}</h2>
+                <p><strong>Brand:</strong> ${product.brand}</p>
+                <p><strong>Price:</strong> $${product.price}</p>
+                <p><strong>Description:</strong> ${product.description}</p>
+              </div>
+            `;
+            productDetailEle.scrollIntoView({ behavior: "smooth" });
+          });
+        });
+      };
+
+      fetchProducts();
+
+      currentPageEle.innerText = page;
+
+      previewEle.addEventListener("click", function () {
+        if (page > 1) {
+          page--;
+          currentPageEle.innerText = page;
+          skip = (page - 1) * limit;
+          fetchProducts(limit, skip);
+        }
+      });
+
+      nextEle.addEventListener("click", function () {
+        const pageMax = Math.ceil(totalProducts / limit);
+        if (page < pageMax) {
+          page++;
+          currentPageEle.innerText = page;
+          skip = (page - 1) * limit;
+          fetchProducts(limit, skip);
+        }
+      });
+
+      searchBtn.addEventListener("click", async function () {
+        const keyword = searchInput.value.trim();
+        if (keyword) {
+          const res = await fetch(
+            `https://dummyjson.com/products/search?q=${encodeURIComponent(keyword)}`
+          );
+          const data = await res.json();
+          allProducts = data.products;
+          renderUI(allProducts);
+        }
+      });
+
+      sortEle.addEventListener("change", function () {
+        const value = sortEle.value;
+        let sorted = [...allProducts];
+
+        if (value === "asc") {
+          sorted.sort((a, b) => a.price - b.price);
+        } else if (value === "desc") {
+          sorted.sort((a, b) => b.price - a.price);
+        }
+
+        renderUI(sorted);
+      });
+    </script>
+  </body>
+</html>
